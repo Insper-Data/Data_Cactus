@@ -1,8 +1,12 @@
 
+# bibliotecas
+
 library(tidyverse)
 library(patchwork)
 
-base <- read_csv("SAEB_IDEB_SOCIOECONOMICOS_cactus.csv") %>% 
+# bases
+
+base <- read_csv("../../BaseDados/Avaliacoes/SAEB_IDEB_SOCIOECONOMICOS_cactus.csv") %>% 
   select(-c(X1, ID_PROVA_BRASIL, MEDIA_5EF_MT, MEDIA_9EF_MT)) %>% 
   mutate(cactus = str_remove_all(cactus, "_5_9"))
 
@@ -15,6 +19,13 @@ base_agrupada <- base %>% group_by(cactus, ano) %>%
             IDEB_5o = mean(IDEB_5o, na.rm = TRUE),
             IDEB_9o = mean(IDEB_9o, na.rm = TRUE))
 
+
+
+# gráficos
+
+## SAEB MT
+
+### linhas
 
 b <- base_agrupada %>% 
   ggplot(aes(ano, MT_9o, color = cactus)) +
@@ -32,6 +43,42 @@ a <- base_agrupada %>%
   scale_x_continuous(breaks = seq(-1, 2100, 2)) +
   labs(y = "Matemática SAEB 5o ano")
 
+### barras
+
+base_agrupada %>% 
+  ggplot(aes(ano, MT_5o, fill = cactus)) +
+  geom_col(position = "dodge") +
+  theme_classic() +
+  labs(title = "Matemática 5º ano",
+       x = "Anos",
+       y = "SAEB")
+
+
+base_agrupada %>% 
+  ggplot(aes(ano, MT_9o, fill = cactus)) +
+  geom_col(position = "dodge") +
+  theme_classic() +
+  labs(title = "Matemática 9º ano",
+       x = "Anos",
+       y = "SAEB")
+
+#### 2017 v 2019
+
+base_agrupada %>%
+  filter(ano == c(2017, 2019)) %>% 
+  ggplot(aes(ano, MT_9o, color = cactus)) +
+  geom_point() +
+  geom_line() +
+  theme_classic() +
+  scale_x_continuous(breaks = seq(-1, 2100, 2)) +
+  labs(y = "Matemática SAEB 9o ano")
+
+
+
+
+#####
+
+## IDEB
 
 c <- base_agrupada %>% 
   ggplot(aes(ano, IDEB_5o, color = cactus)) +
@@ -54,17 +101,32 @@ d <- base_agrupada %>%
   labs(y = "IDEB 9o ano")
 
 
+### barras
 
-base_agrupada %>%
-  filter(ano == c(2017, 2019)) %>% 
-  ggplot(aes(ano, MT_9o, color = cactus)) +
-  geom_point() +
-  geom_line() +
+base_agrupada %>% 
+  ggplot(aes(ano, IDEB_5o, fill = cactus)) +
+  geom_col(position = "dodge") +
   theme_classic() +
-  scale_x_continuous(breaks = seq(-1, 2100, 2)) +
-  labs(y = "Matemática SAEB 9o ano")
+  labs(title = "IDEB 5º ano",
+       x = "Anos",
+       y = "IDEB")
 
 
+base_agrupada %>% 
+  ggplot(aes(ano, IDEB_9o, fill = cactus)) +
+  geom_col(position = "dodge") +
+  theme_classic() +
+  labs(title = "IDEB 9º ano",
+       x = "Anos",
+       y = "IDEB")
+
+
+
+
+
+
+
+# todos juntos
 
 (a + b) / (c + d) + 
   plot_annotation(title = "Notas SAEB e IDEB",
