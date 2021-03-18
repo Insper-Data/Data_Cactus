@@ -91,3 +91,32 @@ base_pareada %>% count(`Código da Escola`) %>% view
 
 
 write_xlsx(base_pareada, "base_pareada.xlsx")
+
+###########################
+
+
+
+
+#### adicionando o SPAECE ####
+
+
+
+#############################
+# RODAR ESSA PARTE SEPARADA #
+#############################
+
+
+
+spaece <- read_xlsx("SPAECE_9o_MT.xlsx") %>% 
+  select(-c(Rede, `Regional Fortaleza`, `Município`, `Distrito Fortaleza`))
+
+
+base <- read_csv("SAEB_IDEB_ESCOLAS_5o_9o_2019_cactus.csv") %>% 
+  filter(ano == c(2017, 2019)) %>% 
+  select(-c(X1, `Sigla da UF`, `Nome do Município_y`))
+
+
+x <- left_join(base, spaece, by = c("Código do Município", "Código da Escola", "ano" = "Edição"))
+
+
+write_csv(x, "SAEB_IDEB_SPAECE.csv")
