@@ -9,6 +9,7 @@ SAEB_IDEB_ESCOLAS_5o <- read_excel("C:/Users/Bruno Bregola/Desktop/Projeto Cactu
   mutate(across(7:22, as.numeric))
 
 
+
 x <- SAEB_IDEB_ESCOLAS_5o %>%
   pivot_longer(-c(`Sigla da UF`:Rede), names_to = "ano", values_to = "MT_5o") %>% 
   mutate(ano = str_remove_all(ano, "MT_5o_"))
@@ -120,3 +121,42 @@ x <- left_join(base, spaece, by = c("CÃ³digo do MunicÃ­pio", "CÃ³digo da Escola"
 
 
 write_csv(x, "SAEB_IDEB_SPAECE.csv")
+
+
+
+#############################
+
+evasao9_2017 <- read_xlsx("evasao_ceara_9o_2017.xlsx")
+evasao9 <- read_xlsx("evasao_ceara_9o_2019.xlsx")
+
+evasao9 <- 
+  evasao9 %>% 
+  mutate(across(6:11, ~ str_replace_all(.x, "NA", NA_character_)))
+
+
+evasao9 <- 
+  evasao9 %>% 
+  mutate(across(6:11, ~ as.numeric(.x)))
+
+
+evasao9_2017 <- 
+  evasao9_2017 %>% 
+  mutate(across(6:11, ~ as.numeric(.x)))
+
+evasao9_2017 <- 
+  evasao9_2017 %>% 
+  mutate(across(6:11, ~ str_replace_all(.x, "NA", NA_character_)))
+
+evasao_total <- rbind(evasao9_2017, evasao9)
+
+ideb_saeb_spaece <- read_csv("SAEB_IDEB_SPAECE.csv")
+
+df_regressao <- left_join(ideb_saeb_spaece, evasao_total, by = c("Código do Município", "Código da Escola", "ano" = "Ano"))
+
+df_regressao <- df_regressao%>% rename(Nome_Escola = `Nome da Escola.x`)
+
+library(writexl)
+write_xlsx(df_regressao, "base_final.xlsx")
+  
+  
+  
