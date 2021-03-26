@@ -1,8 +1,11 @@
 library(readxl)
 library(readr)
 library(tidyverse)
+library(RColorBrewer)
+library(ggtext)
+library(scales)
 
-base_final <- read_excel("~/Desktop/Data_Cactus/BaseDados/Microdados/base_final.xlsx")
+base_final <- read_excel("base_final.xlsx")
 
 ano_19 <- base_final %>% filter(ano == 2019)
 
@@ -24,9 +27,9 @@ ano_17 <- ano_17 %>% na.omit
 # Juntando os controles #
 #########################
 
-controles1 <- read_xlsx("~/Desktop/Data_Cactus/BaseDados/Microdados/controleSAEB.xlsx")
-controles2 <- read_csv("~/Desktop/Data_Cactus/BaseDados/Microdados/Controles_2.csv")
-urbano <- read_csv("~/Desktop/Data_Cactus/BaseDados/Microdados/urbano.csv")
+controles1 <- read_xlsx("controleSAEB.xlsx")
+controles2 <- read_csv("Controles_2.csv")
+urbano <- read_csv("urbano.csv")
 
 
 controles1 <- controles1 %>% select(-1) %>% mutate(ano = 2019)
@@ -77,20 +80,124 @@ base2019 <- na.omit(base2019)
 base2019 <- base2019 %>% 
   left_join(urbano, by = c("Código da Escola" = "ID_ESCOLA"))
 
+base2019 <- base2019 %>% 
+  mutate(cactus = ifelse(cactus == "cactus19", 1, 0))
+
 
 #===============================================
 # Regressões sem controles, dummy cactus
 #===============================================
 
-ano_19 %>% 
-  filter(cactus == "cactus19") %>% 
-  ggplot(aes(Escola, MT_9o, color = cactus)) +
-  geom_point() +
+
+###############
+# Descritivas #
+###############
+
+
+# MAT
+
+x <- base2019 %>% select(MT_9o, cactus) %>% filter(cactus == 0) %>% 
+  mutate(media = mean(MT_9o))
+
+y <- base2019 %>% select(MT_9o, cactus) %>% filter(cactus == 1) %>% 
+  mutate(media = mean(MT_9o))
+
+
+base2019 %>% 
+  ggplot(aes(Nome_Escola, MT_9o, color = cactus)) +
+  geom_point(aes(alpha = cactus, size = cactus)) +
+  geom_hline(yintercept = mean(x$media),
+              color = "deepskyblue1",
+              linetype = 1, size = 1.5) +
+  geom_hline(yintercept = mean(y$media),
+             color = "dodgerblue3",
+             linetype = 1, size = 1.5) +
+  scale_color_continuous(high = "dodgerblue3", low = "deepskyblue1") +
+  scale_alpha(range = c(0.2, 1)) +
+  scale_size(range = c(1, 2)) +
   ylim(150,400) +
-  theme_classic()
-  # geom_hline(yintercept = mean(ano_19$MT_9o),
-  #            color = "blue",
-  #            linetype = 2)
+  labs(x = "Escolas",
+       y = "Nota de matemática no SAEB",
+       title = "Notas de matemática no SAEB do 9º em 2019",
+       subtitle = "<span style='color:deepskyblue1'>Não Cactus</span> Vs. 
+    <span style='color:dodgerblue3'>Cactus</span>") +
+  theme_classic() +
+  theme(axis.text.x = element_blank(),
+        legend.position = "none",
+        axis.ticks.x = element_blank(),
+        plot.subtitle = element_markdown())
+
+
+
+
+# IDEB
+
+x <- base2019 %>% select(IDEB_9o, cactus) %>% filter(cactus == 0) %>% 
+  mutate(media = mean(IDEB_9o))
+
+y <- base2019 %>% select(IDEB_9o, cactus) %>% filter(cactus == 1) %>% 
+  mutate(media = mean(IDEB_9o))
+
+base2019 %>% 
+  ggplot(aes(Nome_Escola, IDEB_9o, color = cactus)) +
+  geom_point(aes(alpha = cactus, size = cactus)) +
+  geom_hline(yintercept = mean(x$media),
+             color = "deepskyblue1",
+             linetype = 1, size = 1.5) +
+  geom_hline(yintercept = mean(y$media),
+             color = "dodgerblue3",
+             linetype = 1, size = 1.5) +
+  scale_color_continuous(high = "dodgerblue3", low = "deepskyblue1") +
+  scale_alpha(range = c(0.2, 1)) +
+  scale_size(range = c(1, 2)) +
+  ylim(0, 10) +
+  labs(x = "Escolas",
+       y = "IDEB",
+       title = "Notas do IDEB do 9º 2019",
+       subtitle = "<span style='color:deepskyblue1'>Não Cactus</span> Vs. 
+    <span style='color:dodgerblue3'>Cactus</span>") +
+  theme_classic() +
+  theme(axis.text.x = element_blank(),
+        legend.position = "none",
+        axis.ticks.x = element_blank(),
+        plot.subtitle = element_markdown())
+
+
+
+
+# ABANDONO
+
+x <- base2019 %>% select(abandono_9o, cactus) %>% filter(cactus == 0) %>% 
+  mutate(media = mean(abandono_9o))
+
+y <- base2019 %>% select(abandono_9o, cactus) %>% filter(cactus == 1) %>% 
+  mutate(media = mean(abandono_9o))
+
+base2019 %>% 
+  ggplot(aes(Nome_Escola, abandono_9o, color = cactus)) +
+  geom_point(aes(alpha = cactus, size = cactus)) +
+  geom_hline(yintercept = mean(x$media),
+             color = "deepskyblue1",
+             linetype = 1, size = 1.5) +
+  geom_hline(yintercept = mean(y$media),
+             color = "dodgerblue3",
+             linetype = 1, size = 1.5) +
+  scale_color_continuous(high = "dodgerblue3", low = "deepskyblue1") +
+  scale_alpha(range = c(0.2, 1)) +
+  scale_size(range = c(1, 2)) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"), limits = c(0, 5))  +
+  labs(x = "Escolas",
+       y = "% abandono do total de alunos",
+       title = "Notas do IDEB do 9º 2019",
+       subtitle = "<span style='color:deepskyblue1'>Não Cactus</span> Vs. 
+    <span style='color:dodgerblue3'>Cactus</span>") +
+  theme_classic() +
+  theme(axis.text.x = element_blank(),
+        
+        legend.position = "none",
+        axis.ticks.x = element_blank(),
+        plot.subtitle = element_markdown())
+
 
 
 #################
