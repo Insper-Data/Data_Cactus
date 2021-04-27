@@ -4,6 +4,7 @@ library(tidyverse)
 library(RColorBrewer)
 library(ggtext)
 library(scales)
+library(extrafont)
 
 base_final <- read_excel("base_final.xlsx")
 
@@ -103,31 +104,32 @@ y <- base2019 %>% select(MT_9o, cactus) %>% filter(cactus == 1) %>%
   mutate(media = mean(MT_9o))
 
 
-base2019 %>% 
+SAEB <- base2019 %>% 
   ggplot(aes(Nome_Escola, MT_9o, color = cactus)) +
   geom_point(aes(alpha = cactus, size = cactus)) +
   geom_hline(yintercept = mean(x$media),
               color = "deepskyblue1",
-              linetype = 1, size = 1.5) +
+              linetype = 1, size = 3) +
   geom_hline(yintercept = mean(y$media),
              color = "dodgerblue3",
-             linetype = 1, size = 1.5) +
+             linetype = 1, size = 3) +
   scale_color_continuous(high = "dodgerblue3", low = "deepskyblue1") +
   scale_alpha(range = c(0.2, 1)) +
-  scale_size(range = c(1, 2)) +
+  scale_size(range = c(5, 10)) +
   ylim(150,400) +
   labs(x = "Escolas",
        y = "Nota de matemática no SAEB",
        title = "Notas de matemática no SAEB do 9º em 2019",
        subtitle = "<span style='color:deepskyblue1'>Não Cactus</span> Vs. 
     <span style='color:dodgerblue3'>Cactus</span>") +
-  theme_classic() +
+  theme_classic(base_size = 36) +
   theme(axis.text.x = element_blank(),
         legend.position = "none",
         axis.ticks.x = element_blank(),
         plot.subtitle = element_markdown())
 
-
+ggsave("grafico_SAEB.png", plot = SAEB, units = "mm",
+       height = 400, width = 400, bg = "transparent")
 
 
 # IDEB
@@ -138,31 +140,32 @@ x <- base2019 %>% select(IDEB_9o, cactus) %>% filter(cactus == 0) %>%
 y <- base2019 %>% select(IDEB_9o, cactus) %>% filter(cactus == 1) %>% 
   mutate(media = mean(IDEB_9o))
 
-base2019 %>% 
+IDEB <- base2019 %>% 
   ggplot(aes(Nome_Escola, IDEB_9o, color = cactus)) +
   geom_point(aes(alpha = cactus, size = cactus)) +
   geom_hline(yintercept = mean(x$media),
              color = "deepskyblue1",
-             linetype = 1, size = 1.5) +
+             linetype = 1, size = 3) +
   geom_hline(yintercept = mean(y$media),
              color = "dodgerblue3",
-             linetype = 1, size = 1.5) +
+             linetype = 1, size = 3) +
   scale_color_continuous(high = "dodgerblue3", low = "deepskyblue1") +
   scale_alpha(range = c(0.2, 1)) +
-  scale_size(range = c(1, 2)) +
+  scale_size(range = c(5, 10)) +
   ylim(0, 10) +
   labs(x = "Escolas",
        y = "IDEB",
        title = "Notas do IDEB do 9º 2019",
        subtitle = "<span style='color:deepskyblue1'>Não Cactus</span> Vs. 
     <span style='color:dodgerblue3'>Cactus</span>") +
-  theme_classic() +
+  theme_classic(base_size = 36) +
   theme(axis.text.x = element_blank(),
         legend.position = "none",
         axis.ticks.x = element_blank(),
         plot.subtitle = element_markdown())
 
-
+ggsave("grafico_IDEB.png", plot = IDEB, units = "mm",
+       height = 400, width = 400, bg = "transparent")
 
 
 # ABANDONO
