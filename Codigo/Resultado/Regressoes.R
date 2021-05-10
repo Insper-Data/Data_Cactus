@@ -242,7 +242,7 @@ summary(lm(IDEB_9o ~ cactus +
              porc_sexo_masc +
              reprovacao +
              superior +
-             porc_trans +
+               porc_trans +
              carro +
              quanti +
              urbano17, data = base2019))
@@ -341,3 +341,13 @@ summary(lm(log(`Proficiência Média`) ~ cactus +
              quanti +
              SPAECE_17 +
              urbano17, data = base2019))
+
+
+# placebo test
+df_9_2013 <- read_xlsx("2013_df9ano_cac.xlsx")
+df_9_2013 <- df_9_2013 %>% filter(!is.na(ideb.x)) %>% 
+  mutate(ideb.x = as.numeric(ideb.x))
+str(df_9_2013)
+summary(lm(ideb.x ~ cactus, data = df_9_2013))
+
+
