@@ -343,11 +343,29 @@ summary(lm(log(`Proficiência Média`) ~ cactus +
              urbano17, data = base2019))
 
 
-# placebo test
+# teste placebo 2013#
+
 df_9_2013 <- read_xlsx("2013_df9ano_cac.xlsx")
+
+
 df_9_2013 <- df_9_2013 %>% filter(!is.na(ideb.x)) %>% 
-  mutate(ideb.x = as.numeric(ideb.x))
-str(df_9_2013)
-summary(lm(ideb.x ~ cactus, data = df_9_2013))
+  mutate(ideb.x = as.numeric(ideb.x),
+         cactus = ifelse(cactus == "cactus19", 1, 0)) %>% 
+  select(-c(1, 11))
+
+  
+base2013 <- left_join(df_9_2013, controles_13, by = c("id_escola" = "ID_ESCOLA"))
+
+  
+summary(lm(ideb.x ~ cactus, data = base2013))
 
 
+
+summary(lm(ideb.x ~ cactus +
+             porc_sexo_masc +
+             porc_cor_prePAr +
+             reprovacao +
+             superior +
+             carro +
+             NU_MATRICULADOS_CENSO_9EF +
+             ID_LOCALIZACAO, data = base2013))
