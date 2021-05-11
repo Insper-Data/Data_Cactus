@@ -16,4 +16,7 @@ c17 <- c17 %>% mutate(ano = 2017)
 c19 <- read_csv("controles_19.csv")
 
 
-x <- rbind(c13, c15, c17)
+controles <- rbind(c13, c15, c17, c19)
+
+
+write_csv(controles, "controles.csv")
