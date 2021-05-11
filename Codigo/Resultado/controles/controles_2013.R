@@ -1,4 +1,6 @@
 
+library(tidyverse)
+
 # https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/saeb
 
 # microdados de 2013 pra escolas 
@@ -41,7 +43,7 @@ escolas <- aluno %>%
             carro = mean(carro, na.rm = TRUE),
             superior = mean(superior, na.rm = TRUE),
             porc_sexo_masc = mean(porc_sexo_masc, na.rm = TRUE),
-            porc_cor_prePAr = mean(porc_cor_prePAr, na.rm = TRUE))
+            porc_cor_prePar = mean(porc_cor_prePar, na.rm = TRUE))
          
          
 # base controles
