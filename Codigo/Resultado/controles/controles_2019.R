@@ -29,4 +29,28 @@ escolas <- db %>%
   mutate(ano = 2019)
 
 
+#
+
+teste <- read_csv("controles_17.csv")
+
+library(readxl)
+
+df <- read_xlsx("controleSAEB.xlsx") %>% select(-c(1, 5, 6)) %>% rename("ID_ESCOLA" = "CO_ENTIDADE")
+
+escolas <- escolas %>% left_join(df)
+
+
+base <- read_csv("TS_ESCOLA_2019.csv")
+
+base <- base %>% 
+  filter(ID_UF == 23,
+         ID_DEPENDENCIA_ADM == 3) %>% 
+  select(c(1:8, 12, 37))
+
+base <- base %>% select(6:10)
+
+
+escolas <- escolas %>% left_join(base)
+
+
 write_csv(escolas, "controles_19.csv")
