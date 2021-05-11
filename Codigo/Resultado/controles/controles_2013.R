@@ -39,7 +39,8 @@ aluno <- base %>%
 
 escolas <- aluno %>% 
   group_by(ID_ESCOLA) %>% 
-  summarise(reprovacao = mean(reprovacao, na.rm = TRUE),
+  summarise(ano = mean(ID_PROVA_BRASIL),
+            reprovacao = mean(reprovacao, na.rm = TRUE),
             carro = mean(carro, na.rm = TRUE),
             superior = mean(superior, na.rm = TRUE),
             porc_sexo_masc = mean(porc_sexo_masc, na.rm = TRUE),
