@@ -29,4 +29,4 @@ escolas <- db %>%
   mutate(ano = 2019)
 
 
-write_csv(escolas, "Controles_2.csv")
+write_csv(escolas, "controles_19.csv")
