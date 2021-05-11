@@ -3,7 +3,7 @@
 
 # microdados de 2013 pra escolas 
 
-df <- read_csv("TS_ESCOLA.csv")
+df <- read_csv("TS_ESCOLA_2013.csv")
 
 # controles escola
 
@@ -17,7 +17,7 @@ df <- df %>%
 
 # microdados 2013 pra alunos
 
-base <- read_csv("TS_ALUNO_9EF.csv") %>% 
+base <- read_csv("TS_ALUNO_9EF_2013.csv") %>% 
   filter(ID_UF == 23,
          ID_DEPENDENCIA_ADM == 3,
          IN_PREENCHIMENTO_QUESTIONARIO == 1) %>% 
