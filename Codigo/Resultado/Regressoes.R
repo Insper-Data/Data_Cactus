@@ -343,29 +343,165 @@ summary(lm(log(`Proficiência Média`) ~ cactus +
              urbano17, data = base2019))
 
 
-# teste placebo 2013#
+## PAINEL ##
 
-df_9_2013 <- read_xlsx("2013_df9ano_cac.xlsx")
+painel <- read_csv("painel.csv")
 
+df_9_2013 <- read_xlsx("2013_df9ano_cac.xlsx") %>% select(c(5,15))
 
-df_9_2013 <- df_9_2013 %>% filter(!is.na(ideb.x)) %>% 
-  mutate(ideb.x = as.numeric(ideb.x),
-         cactus = ifelse(cactus == "cactus19", 1, 0)) %>% 
-  select(-c(1, 11))
+painel <- left_join(painel, df_9_2013)
 
-  
-base2013 <- left_join(df_9_2013, controles_13, by = c("id_escola" = "ID_ESCOLA"))
+painel <- painel %>% mutate(cactus = ifelse(cactus == "cactus19", 1, 0))
 
-  
-summary(lm(ideb.x ~ cactus, data = base2013))
+painel %>% group_by(ano) %>% count(cactus) # cactus por ano
 
 
+df <- read_csv("TS_ESCOLA_2019.csv") %>% 
+  filter(ID_UF == 23,
+         ID_DEPENDENCIA_ADM == 3) %>% 
+  select(ID_ESCOLA, ID_MUNICIPIO)
 
-summary(lm(ideb.x ~ cactus +
+painel <- left_join(painel, df, by = c("id_escola" = "ID_ESCOLA"))
+
+painel <- painel %>% mutate(ano_cactus = case_when(cactus == 1 & ID_MUNICIPIO == 2300200 & ano >= 2019 ~ 1,
+                                                   cactus == 1 & ID_MUNICIPIO == 2302909 & ano >= 2016 ~ 1,
+                                                   cactus == 1 & ID_MUNICIPIO == 2304251 & ano >= 2019 ~ 1,
+                                                   cactus == 1 & ID_MUNICIPIO == 2307254 & ano >= 2018 ~ 1,
+                                                   cactus == 1 & ID_MUNICIPIO == 2313302 & ano >= 2014 ~ 1,
+                                                   TRUE ~ 0))
+
+sum(painel$cactus)
+sum(painel$ano_cactus)
+
+painel %>% group_by(ano) %>% count(ano_cactus)
+
+library(plm)
+
+df_painel <- pdata.frame(painel, index = c("id_escola", "ano"))
+
+formula <- nota_matematica ~ ano_cactus + porc_sexo_masc + porc_cor_prePar + reprovacao + superior + carro + NU_MATRICULADOS_CENSO_9EF + ID_LOCALIZACAO
+
+reg1 <- plm(formula, data = df_painel, model = "within", effect = "twoways")
+
+reg1c <- coeftest(reg1, vcovHC(reg1, type="sss", cluster = "group", method = "white2"))[,2]
+
+summary(reg1)
+
+
+# Testes de validacao:
+
+# Breusch Pagan:
+breuschpagan <- bptest(formula, data = df_painel) # H0 é homocedasticidade
+
+
+# Teste de Hausmann:
+FE <- plm(formula, data=df_painel, model="within")
+RE <- plm(formula, data=df_painel, model="random")
+hausmann <- phtest(FE, RE) # Temos FE
+
+
+## TESTES PLACEBO + REGRESSÕES ##
+
+# ideb
+
+summary(lm(ideb ~ cactus, data = painel %>% filter(ano == 2013)))
+
+summary(lm(ideb ~ cactus, data = painel %>% filter(ano == 2015)))
+
+summary(lm(ideb ~ cactus, data = painel %>% filter(ano == 2017)))
+
+summary(lm(ideb ~ cactus, data = painel %>% filter(ano == 2019)))
+
+
+# mat
+
+summary(lm(nota_matematica ~ cactus, data = painel %>% filter(ano == 2013)))
+
+summary(lm(nota_matematica ~ cactus, data = painel %>% filter(ano == 2015)))
+
+summary(lm(nota_matematica ~ cactus, data = painel %>% filter(ano == 2017)))
+
+summary(lm(nota_matematica ~ cactus, data = painel %>% filter(ano == 2019)))
+
+
+
+# ideb
+
+summary(lm(ideb ~ cactus +
              porc_sexo_masc +
-             porc_cor_prePAr +
+             porc_cor_prePar +
              reprovacao +
              superior +
              carro +
              NU_MATRICULADOS_CENSO_9EF +
-             ID_LOCALIZACAO, data = base2013))
+             ID_LOCALIZACAO, data = painel %>% filter(ano == 2013)))
+
+summary(lm(ideb ~ cactus +
+             porc_sexo_masc +
+             porc_cor_prePar +
+             reprovacao +
+             superior +
+             carro +
+             NU_MATRICULADOS_CENSO_9EF +
+             ID_LOCALIZACAO, data = painel %>% filter(ano == 2015)))
+
+
+summary(lm(ideb ~ cactus +
+             porc_sexo_masc +
+             porc_cor_prePar +
+             reprovacao +
+             superior +
+             carro +
+             NU_MATRICULADOS_CENSO_9EF +
+             ID_LOCALIZACAO, data = painel %>% filter(ano == 2017)))
+
+
+summary(lm(ideb ~ cactus +
+             porc_sexo_masc +
+             porc_cor_prePar +
+             reprovacao +
+             superior +
+             carro +
+             NU_MATRICULADOS_CENSO_9EF +
+             ID_LOCALIZACAO, data = painel %>% filter(ano == 2019)))
+
+
+# mat
+
+summary(lm(nota_matematica ~ cactus +
+             porc_sexo_masc +
+             porc_cor_prePar +
+             reprovacao +
+             superior +
+             carro +
+             NU_MATRICULADOS_CENSO_9EF +
+             ID_LOCALIZACAO, data = painel %>% filter(ano == 2013)))
+
+summary(lm(nota_matematica ~ cactus +
+             porc_sexo_masc +
+             porc_cor_prePar +
+             reprovacao +
+             superior +
+             carro +
+             NU_MATRICULADOS_CENSO_9EF +
+             ID_LOCALIZACAO, data = painel %>% filter(ano == 2015)))
+
+
+summary(lm(nota_matematica ~ cactus +
+             porc_sexo_masc +
+             porc_cor_prePar +
+             reprovacao +
+             superior +
+             carro +
+             NU_MATRICULADOS_CENSO_9EF +
+             ID_LOCALIZACAO, data = painel %>% filter(ano == 2017)))
+
+
+summary(lm(nota_matematica ~ cactus +
+             porc_sexo_masc +
+             porc_cor_prePar +
+             reprovacao +
+             superior +
+             carro +
+             NU_MATRICULADOS_CENSO_9EF +
+             ID_LOCALIZACAO, data = painel %>% filter(ano == 2019)))
