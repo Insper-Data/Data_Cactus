@@ -380,17 +380,29 @@ sum(painel$ano_cactus)
 painel %>% group_by(ano) %>% count(ano_cactus)
 
 library(plm)
+library(coeftest)
+
 
 df_painel <- pdata.frame(painel, index = c("id_escola", "ano"))
 
-formula <- nota_matematica ~ ano_cactus + porc_sexo_masc + porc_cor_prePar + reprovacao + superior + carro + NU_MATRICULADOS_CENSO_9EF + ID_LOCALIZACAO
+formula1 <- nota_matematica ~ ano_cactus + porc_sexo_masc + porc_cor_prePar + reprovacao + superior + carro + NU_MATRICULADOS_CENSO_9EF + ID_LOCALIZACAO
 
-reg1 <- plm(formula, data = df_painel, model = "within", effect = "twoways")
+formula2 <- ideb ~ ano_cactus + porc_sexo_masc + porc_cor_prePar + reprovacao + superior + carro + NU_MATRICULADOS_CENSO_9EF + ID_LOCALIZACAO
+
+
+reg1 <- plm(formula1, data = df_painel, model = "within", effect = "twoways")
+
+reg2 <- plm(formula2, data = df_painel, model = "within", effect = "twoways")
 
 reg1c <- coeftest(reg1, vcovHC(reg1, type="sss", cluster = "group", method = "white2"))[,2]
 
+reg2c <- coeftest(reg2, vcovHC(reg2, type="sss", cluster = "group", method = "white2"))[,2]
+
+
+
 summary(reg1)
 
+summary(reg2)
 
 # Testes de validacao:
 
@@ -481,7 +493,7 @@ summary(lm(nota_matematica ~ cactus +
              NU_MATRICULADOS_CENSO_9EF +
              ID_LOCALIZACAO, data = painel %>% filter(ano == 2013)))
 
-summary(lm(nota_matematica ~ cactus +
+15.summary(lm(nota_matematica ~ cactus +
              porc_sexo_masc +
              porc_cor_prePar +
              reprovacao +
