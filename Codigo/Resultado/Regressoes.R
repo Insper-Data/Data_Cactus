@@ -372,16 +372,18 @@ painel <- painel %>% mutate(ano_cactus = case_when(cactus == 1 & ID_MUNICIPIO ==
                                                    cactus == 1 & ID_MUNICIPIO == 2313302 & ano >= 2014 ~ 1,
                                                    TRUE ~ 0))
 
-write_csv(painel, "painel_final.csv")
+# write_csv(painel, "painel_final.csv")
 
 sum(painel$cactus)
 sum(painel$ano_cactus)
 
 painel %>% group_by(ano) %>% count(ano_cactus)
 
+library(tidyverse)
 library(plm)
 library(coeftest)
 
+painel <- read.csv("painel_final.csv")
 
 df_painel <- pdata.frame(painel, index = c("id_escola", "ano"))
 
@@ -399,10 +401,17 @@ reg1c <- coeftest(reg1, vcovHC(reg1, type="sss", cluster = "group", method = "wh
 reg2c <- coeftest(reg2, vcovHC(reg2, type="sss", cluster = "group", method = "white2"))[,2]
 
 
-
 summary(reg1)
 
 summary(reg2)
+
+
+painel %>% 
+  group_by(ano) %>% 
+  summarise(mSAEB = mean(nota_matematica)) %>% 
+  ggplot(aes(ano, mSAEB), color = "lightblue") +
+  geom_line() +
+  ylim(150, 270)
 
 # Testes de validacao:
 
