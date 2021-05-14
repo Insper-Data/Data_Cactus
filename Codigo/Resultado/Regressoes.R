@@ -343,6 +343,8 @@ summary(lm(log(`Proficiência Média`) ~ cactus +
              urbano17, data = base2019))
 
 
+#####
+
 ## PAINEL ##
 
 painel <- read_csv("painel.csv")
@@ -369,6 +371,8 @@ painel <- painel %>% mutate(ano_cactus = case_when(cactus == 1 & ID_MUNICIPIO ==
                                                    cactus == 1 & ID_MUNICIPIO == 2307254 & ano >= 2018 ~ 1,
                                                    cactus == 1 & ID_MUNICIPIO == 2313302 & ano >= 2014 ~ 1,
                                                    TRUE ~ 0))
+
+write_csv(painel, "painel_final.csv")
 
 sum(painel$cactus)
 sum(painel$ano_cactus)
