@@ -407,12 +407,25 @@ summary(reg2)
 
 
 painel %>% 
-  group_by(ano) %>% 
-  summarise(mSAEB = mean(nota_matematica)) %>% 
-  ggplot(aes(ano, mSAEB), color = "lightblue") +
-  geom_line() +
-  ylim(150, 270)
+  filter(ano == 2019) %>% 
+  summarise(a = mean(nota_matematica))
 
+
+painel %>% 
+  filter(ano == 2019) %>% 
+  mutate(cactus = as.factor(cactus)) %>% 
+  group_by(cactus) %>% 
+  summarise(mSAEB = mean(nota_matematica)) %>% 
+  mutate(cactus = fct_reorder(cactus, desc(mSAEB))) %>% 
+  ggplot(aes(cactus, mSAEB, fill = factor(cactus, labels = c("Não Cactus", "Cactus")))) +
+  geom_col() +
+  scale_fill_manual(values = c("#04cc64", "#fbab04")) +
+  scale_x_discrete(labels = c("Cacus", "Não Cactus")) +
+  labs(fill = "Escolas",
+       x = "",
+       y = "Nota média de matemática no SAEB em 2019") +
+  theme_classic() 
+  
 # Testes de validacao:
 
 # Breusch Pagan:
