@@ -381,7 +381,7 @@ painel %>% group_by(ano) %>% count(ano_cactus)
 
 library(tidyverse)
 library(plm)
-library(coeftest)
+library(lmtest)
 
 painel <- read.csv("painel_final.csv")
 
@@ -425,17 +425,55 @@ painel %>%
        x = "",
        y = "Nota média de matemática no SAEB em 2019") +
   theme_classic() 
+
+
   
 # Testes de validacao:
 
+
 # Breusch Pagan:
-breuschpagan <- bptest(formula, data = df_painel) # H0 é homocedasticidade
+
+bptest(formula1, data = df_painel)# H0 é homocedasticidade
+
+bptest(formula2, data = df_painel)
+
+
+### rejeita H0 -> heterocedastico 
 
 
 # Teste de Hausmann:
-FE <- plm(formula, data=df_painel, model="within")
-RE <- plm(formula, data=df_painel, model="random")
-hausmann <- phtest(FE, RE) # Temos FE
+
+FE <- plm(formula1, data = df_painel, model = "within")
+
+RE <- plm(formula1, data = df_painel, model = "random")
+
+hausmann <- phtest(FE, RE) 
+
+### Temos FE
+
+# Autocorrelação AR(1)
+
+## Durbin Watson
+
+pbnftest(reg1)
+
+pbnftest(reg2)
+
+
+## Baltagi WU LBI
+
+pbnftest(reg1, test = "lbi")
+
+pbnftest(reg2, test = "lbi")
+
+
+## Wooldridge 2002
+
+pwartest(formula1, data = df_painel, type = "HC3")
+
+pwartest(formula2, data = df_painel, type = "HC3")
+
+
 
 
 ## TESTES PLACEBO + REGRESSÕES ##
@@ -515,7 +553,7 @@ summary(lm(nota_matematica ~ cactus +
              NU_MATRICULADOS_CENSO_9EF +
              ID_LOCALIZACAO, data = painel %>% filter(ano == 2013)))
 
-15.summary(lm(nota_matematica ~ cactus +
+summary(lm(nota_matematica ~ cactus +
              porc_sexo_masc +
              porc_cor_prePar +
              reprovacao +
