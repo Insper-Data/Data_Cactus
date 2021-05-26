@@ -383,7 +383,7 @@ library(tidyverse)
 library(plm)
 library(lmtest)
 
-painel <- read.csv("painel_final.csv")
+painel <- read_csv("painel_final.csv")
 
 df_painel <- pdata.frame(painel, index = c("id_escola", "ano"))
 
