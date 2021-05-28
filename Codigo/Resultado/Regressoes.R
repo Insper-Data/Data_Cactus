@@ -377,7 +377,14 @@ painel <- painel %>% mutate(ano_cactus = case_when(cactus == 1 & ID_MUNICIPIO ==
 sum(painel$cactus)
 sum(painel$ano_cactus)
 
-painel %>% group_by(ano) %>% count(ano_cactus)
+painel %>% group_by(ano) %>% count(cactus)
+
+
+
+
+
+
+#### REGRESSÕES EM PAINEL ####
 
 library(tidyverse)
 library(plm)
@@ -387,7 +394,8 @@ painel <- read_csv("painel_final.csv")
 
 df_painel <- pdata.frame(painel, index = c("id_escola", "ano"))
 
-formula1 <- nota_matematica ~ ano_cactus + porc_sexo_masc + porc_cor_prePar + reprovacao + superior + carro + NU_MATRICULADOS_CENSO_9EF + ID_LOCALIZACAO
+
+formula1 <- nota_matematica ~ ano_cactus + ano + porc_sexo_masc + porc_cor_prePar + reprovacao + superior + carro + NU_MATRICULADOS_CENSO_9EF + ID_LOCALIZACAO
 
 formula2 <- ideb ~ ano_cactus + porc_sexo_masc + porc_cor_prePar + reprovacao + superior + carro + NU_MATRICULADOS_CENSO_9EF + ID_LOCALIZACAO
 
@@ -472,6 +480,28 @@ pbnftest(reg2, test = "lbi")
 pwartest(formula1, data = df_painel, type = "HC3")
 
 pwartest(formula2, data = df_painel, type = "HC3")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
