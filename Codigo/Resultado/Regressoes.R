@@ -128,8 +128,19 @@ SAEB <- base2019 %>%
         axis.ticks.x = element_blank(),
         plot.subtitle = element_markdown())
 
+
+png("mat.png", units = "cm", width = 60.44, height = 35.7, res = 300)
+
+SAEB
+
+dev.off()
+
+
 ggsave("grafico_SAEB.png", plot = SAEB, units = "mm",
        height = 400, width = 400, bg = "transparent")
+
+
+
 
 
 # IDEB
@@ -164,8 +175,17 @@ IDEB <- base2019 %>%
         axis.ticks.x = element_blank(),
         plot.subtitle = element_markdown())
 
+
+png("IDEB.png", units = "cm", width = 60.44, height = 35.7, res = 300)
+
+IDEB
+
+dev.off()
+
+
+
 ggsave("grafico_IDEB.png", plot = IDEB, units = "mm",
-       height = 400, width = 400, bg = "transparent")
+       height = 600, width = 1320, bg = "transparent", limitsize = FALSE)
 
 
 # ABANDONO
@@ -433,6 +453,47 @@ painel %>%
        x = "",
        y = "Nota média de matemática no SAEB em 2019") +
   theme_classic() 
+
+
+
+painel %>% 
+  mutate(cactus = as.factor(cactus)) %>% 
+  group_by(cactus, ano) %>% 
+  summarise(ano = mean(ano),
+            mat = mean(nota_matematica),
+            .groups = "keep") %>% 
+  ggplot(aes(ano, mat)) +
+  geom_line(aes(color = cactus), size = 1.5) +
+  scale_color_manual(values = c("deepskyblue1", "dodgerblue3")) +
+  labs(x = element_blank(),
+       y = "Média da nota de matemática do 9º ano",
+       title = "Nota de matemática no SAEB para o 9º ano das escolas municipais do Ceará",
+       subtitle = "<span style='color:deepskyblue1'>Não Cactus</span> Vs. 
+    <span style='color:dodgerblue3'>Cactus</span>") +
+  theme_classic() +
+  theme(legend.position = "none",
+        axis.ticks.x = element_blank(),
+        plot.subtitle = element_markdown())
+
+
+painel %>% 
+  mutate(cactus = as.factor(cactus)) %>% 
+  group_by(cactus, ano) %>% 
+  summarise(ano = mean(ano),
+            ideb = mean(ideb),
+            .groups = "keep") %>% 
+  ggplot(aes(ano, ideb)) +
+  geom_line(aes(color = cactus), size = 1.5) +
+  scale_color_manual(values = c("deepskyblue1", "dodgerblue3")) +
+  labs(x = element_blank(),
+       y = "Média da nota do IDEB do 9º ano",
+       title = "Nota IDEB para o 9º ano das escolas municipais do Ceará",
+       subtitle = "<span style='color:deepskyblue1'>Não Cactus</span> Vs. 
+    <span style='color:dodgerblue3'>Cactus</span>") +
+  theme_classic() +
+  theme(legend.position = "none",
+        axis.ticks.x = element_blank(),
+        plot.subtitle = element_markdown())
 
 
   
