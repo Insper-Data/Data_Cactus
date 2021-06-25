@@ -457,7 +457,7 @@ painel %>%
 
 
 painel %>% 
-  mutate(cactus = as.factor(cactus)) %>% 
+  mutate(cactus = as.factor(ano_cactus)) %>% 
   group_by(cactus, ano) %>% 
   summarise(ano = mean(ano),
             mat = mean(nota_matematica),
@@ -476,8 +476,9 @@ painel %>%
         plot.subtitle = element_markdown())
 
 
+
 painel %>% 
-  mutate(cactus = as.factor(cactus)) %>% 
+  mutate(cactus = as.factor(ano_cactus)) %>% 
   group_by(cactus, ano) %>% 
   summarise(ano = mean(ano),
             ideb = mean(ideb),
@@ -494,6 +495,8 @@ painel %>%
   theme(legend.position = "none",
         axis.ticks.x = element_blank(),
         plot.subtitle = element_markdown())
+
+
 
 
   
