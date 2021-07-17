@@ -409,6 +409,7 @@ painel %>% group_by(ano) %>% count(cactus)
 library(tidyverse)
 library(plm)
 library(lmtest)
+library(performance)
 
 painel <- read_csv("painel_final.csv")
 
@@ -427,6 +428,8 @@ reg2 <- plm(formula2, data = df_painel, model = "within", effect = "twoways")
 reg1c <- coeftest(reg1, vcovHC(reg1, type="sss", cluster = "group", method = "white2"))[,2]
 
 reg2c <- coeftest(reg2, vcovHC(reg2, type="sss", cluster = "group", method = "white2"))[,2]
+
+
 
 
 summary(reg1)
@@ -548,28 +551,6 @@ pwartest(formula2, data = df_painel, type = "HC3")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## TESTES PLACEBO + REGRESSÕES ##
 
 # ideb
@@ -591,9 +572,9 @@ summary(lm(nota_matematica ~ cactus, data = painel %>% filter(ano == 2015)))
 
 summary(lm(nota_matematica ~ cactus, data = painel %>% filter(ano == 2017)))
 
-summary(lm(nota_matematica ~ cactus, data = painel %>% filter(ano == 2019)))
+x <- lm(nota_matematica ~ cactus, data = painel %>% filter(ano == 2019))
 
-
+check_model(x)
 
 # ideb
 
