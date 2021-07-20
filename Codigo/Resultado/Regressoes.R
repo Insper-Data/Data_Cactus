@@ -413,6 +413,33 @@ library(performance)
 
 painel <- read_csv("painel_final.csv")
 
+
+painel %>% 
+  mutate(ID_LOCALIZACAO = ifelse(ID_LOCALIZACAO == 1, 1, 0)) %>% 
+  group_by(ano) %>%
+  filter(cactus == 1) %>% 
+  summarise(mat = mean(nota_matematica),
+            ideb = mean(ideb),
+            rep = mean(reprovacao, na.rm = TRUE),
+            carro = mean(carro, na.rm = TRUE),
+            superior = mean(superior, na.rm = TRUE),
+            masc = mean(porc_sexo_masc, na.rm = TRUE),
+            prepar = mean(porc_cor_prePar, na.rm = TRUE),
+            matriculas = mean(NU_MATRICULADOS_CENSO_9EF, na.rm = TRUE),
+            urbano = sum(ID_LOCALIZACAO, na.rm = TRUE)) %>% 
+  summarise(mat = mean(mat),
+            ideb = mean(ideb),
+            rep = mean(rep) * 100,
+            carro = mean(carro) * 100,
+            superior = mean(superior) * 100,
+            masc = mean(masc) * 100,
+            prepar = mean(prepar) * 100,
+            matriculas = mean(matriculas),
+            urbano = mean(urbano)/nrow(painel %>% group_by(ano) %>% filter(cactus == 1))*100) %>% 
+  pivot_longer(cols = everything(), names_to = "vars", values_to = "value")
+  
+
+
 df_painel <- pdata.frame(painel, index = c("id_escola", "ano"))
 
 
